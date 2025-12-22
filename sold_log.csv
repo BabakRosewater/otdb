@@ -1,14 +1,22 @@
 ﻿GlobalCustomerID,AutoLeadID,SoldStatus,SoldDate,LeadCreatedDate,FirstName,MiddleName,LastName,CompanyName,Address,City,State,PostalCode,DayPhone,EvePhone,CellPhone,Email,EmailAlt,LeadSource,DealNumber,SellingPrice,FrontGross,BackGross,SoldNote,SalesRepName,SplitSalesRep,VehicleYear,VehicleMake,VehicleModel,VehicleStockNumber,VehicleVIN,InventoryType
-1058540843,1429494779,Delivered,12/15/2025 18:02,2/2/2021 17:00,,,,,,,,,,,,,,Unknown,131299,,,,,Parker McWhirter,,2026,Hyundai,Sonata,HT7376,KMHL64JA7TA545729,N
+1333686698,1942928792,Pending Finance,12/20/2025 13:46,12/19/2025 13:57,,,,,,,,,,,,,,Repeat Customer,131310,,,,,Brandon Ullom,,2025,Hyundai,Elantra,H7355A,KMHLS4DGXSU880668,U
+1058535329,1942456078,Delivered,12/19/2025 18:44,12/18/2025 17:07,,,,,,,,,,,,,,Repeat Customer,131309,,,,,Brock Cross,Your Friends at Clark Hyundai,2026,Hyundai,Tucson Hybrid,H7345,KM8JEDD11TU411433,N
+1058534471,1941141036,Pending Finance,12/19/2025 16:24,12/16/2025 13:19,,,,,,,,,,,,,,Drive By,131308,,,,,Brock Cross,Your Friends at Clark Hyundai,2026,Hyundai,Santa Fe Hybrid,H7390,5NMP3DG1XTH100946,N
+1253983266,1902228060,Delivered,12/19/2025 16:05,9/25/2025 17:15,,,,,,,,,,,,,,Dealers WebSite,131307,,,,,Brock Cross,Parker McWhirter,2026,Hyundai,Palisade,HT7401,KM8RJES26TU069932,N
+1370195316,1942709988,Delivered,12/19/2025 12:06,12/19/2025 10:30,,,,,,,,,,,,,,Referral,131306,,,,,Veronica Nekrassoff,,2018,Jeep,Grand Cherokee,HU5174,1C4RJFAG2JC394460,U
+1342109939,1941775801,Delivered,12/19/2025 9:53,12/18/2025 0:16,,,,,,,,,,,,,,Repeat Customer,131304,,,,,Brandon Ullom,,2016,Hyundai,Tucson,H7320A,KM8J3CA24GU060200,U
+1278087882,1902340970,Delivered,12/18/2025 11:59,9/25/2025 22:45,,,,,,,,,,,,,,Dealer Website - Request More Info - Dealer.Com Website,131301,,,,,Brock Cross,,2024,Hyundai,Santa Fe HEV,H7313A,5NMP5DG1XRH012353,U
+1368258549,1939116128,Delivered,12/16/2025 17:36,12/11/2025 16:20,,,,,,,,,,,,,,Kbb Ico Kelley Blue Book - Mobile,131300,,,,,Veronica Nekrassoff,Rob VanderBeek,2018,Ford,Explorer,H7381A,1FM5K8GT9JGC86255,U
+1058540843,1429494779,Delivered,12/15/2025 18:02,2/2/2021 17:00,,,,,,,,,,,,,,Unknown,131299,,,,,Parker McWhirter,,2026,Hyundai,Sonata,HT7402,KMHL64JA4TA545056,N
 1369065246,1940385116,Delivered,12/15/2025 17:26,12/14/2025 13:31,,,,,,,,,,,,,,Cars.com,131297,,,,,Parker McWhirter,Rob VanderBeek,2022,Toyota,Highlander,H029059A,5TDBBRCH5NS557077,U
-1058546210,1939842753,Delivered,12/15/2025 15:46,12/12/2025 15:55,,,,,,,,,,,,,,Referral,131296,,,,,Brandon Ullom,,2021,Honda,Civic Hatchback,H7297A,SHHFK7H61MU206794,U
+1058546210,1939842753,Delivered,12/15/2025 15:46,12/12/2025 15:55,,,,,,,,,,,,,,Referral,131296,,,,,Brandon Ullom,,2021,Honda,Civic,H7297A,SHHFK7H61MU206794,U
 1058544291,1939806664,Delivered,12/15/2025 13:51,12/12/2025 14:17,,,,,,,,,,,,,,Referral,131295,,,,,Veronica Nekrassoff,,2026,Hyundai,Tucson,H7395,5NMJFCDE4TH645099,N
 1369077759,1940603257,Delivered,12/15/2025 12:18,12/15/2025 10:15,,,,,,,,,,,,,,Referral,131294,,,,,Veronica Nekrassoff,,2015,GMC,Sierra 2500HD,HU5177,1GT120E89FF136517,U
 1369075145,1940597707,Delivered,12/15/2025 11:06,12/15/2025 10:02,,,,,,,,,,,,,,Drive By,131293,,,,,Brock Cross,,2026,Hyundai,Santa Fe,H7365,5NMP5DGL4TH172348,N
 1368816726,1940106587,Delivered,12/13/2025 16:05,12/13/2025 11:05,,,,,,,,,,,,,,Phone Up,131292,,,,,John Squier,,2025,Toyota,RAV4,HU5168,2T3A1RFV3SW520457,U
 1365213331,1933463613,Delivered,12/13/2025 12:56,11/29/2025 22:13,,,,,,,,,,,,,,Kbb Ico Dealer Website - Mobile,131291,,,,,Brock Cross,Rob VanderBeek,2013,Hyundai,Tucson,H7270B,KM8JUCAC5DU575157,U
 1368819672,1939613742,Delivered,12/13/2025 11:52,12/12/2025 9:03,,,,,,,,,,,,,,Dealer Website - Request More Info - Dealer.Com Website,131290,,,,,Veronica Nekrassoff,,2020,Toyota,Tacoma,HU5175,3TMCZ5AN1LM299378,U
-1368675321,1939830999,Pending Finance,12/13/2025 9:03,12/12/2025 15:22,,,,,,,,,,,,,,Facebook,131289,,,,,Brock Cross,Parker McWhirter,2014,Ford,F-150,HU5122A,1FTFW1EF0EKF99246,U
+1368675321,1939830999,Delivered,12/13/2025 9:03,12/12/2025 15:22,,,,,,,,,,,,,,Facebook,131289,,,,,Brock Cross,Parker McWhirter,2014,Ford,F-150,HU5122A,1FTFW1EF0EKF99246,U
 1367177824,1937080966,Delivered,12/12/2025 12:34,12/7/2025 22:55,,,,,,,,,,,,,,Cargurus Area Boost,131287,,,,,Brock Cross,,2023,Ford,Mustang,H7085C,1FA6P8TH6P5109684,U
 1367807971,1938342663,Delivered,12/11/2025 18:34,12/10/2025 15:55,,,,,,,,,,,,,,Drive By,131282,,,,,Brandon Ullom,,2024,Chevrolet,Equinox,H7261B,3GNAXXEG3RL123958,U
 1058533343,1938311580,Delivered,12/11/2025 14:20,12/10/2025 14:26,,,,,,,,,,,,,,Repeat Customer,131281,,,,,John Squier,,2025,Hyundai,Tucson Hybrid,H7253,KM8JBDD14SU384428,N
