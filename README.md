@@ -1,308 +1,322 @@
-````md
-# OTDB Dashboard (MTD) — Rep KPIs + Hygiene
+# Lead + Sold Log Analyzer (Cohort + Re-Engage)
 
-A lightweight, single-page dashboard that loads your **OTDB CSV** from GitHub, defaults to **Month-To-Date (MTD)**, and produces **salesperson + source KPIs** while separating **performance** from **hygiene** (Bad/Duplicate).
+A single-page, **browser-only** analyzer that loads **Leads** + **Sold Log** data (either encrypted BINs or raw CSVs), performs **attribution matching**, calculates KPIs + charts, and produces a prioritized **Unsold Prospects (Re-Engage)** list with “next best action” guidance.
 
----
-
-## What this does
-
-- ✅ Pulls OTDB data from a **raw GitHub CSV** (`otdb.csv`)
-- ✅ Auto-detects common column names (Created, Status, Lead Source, Rep name, etc.)
-- ✅ Defaults the date filter to **MTD of the dataset’s latest date**
-- ✅ **Excludes Bad leads from OTDB denominators** (so spam/duplicate routing doesn’t punish performance)
-- ✅ Tracks **Duplicates as hygiene**, not performance
-- ✅ Builds:
-  - KPI tiles (whole store)
-  - Salesperson KPI table + charts
-  - Lead Source KPI table + charts
-  - Lost reasons + Bad reasons tables
-  - Raw filtered data with search + paging
-  - CSV exports (filtered rows, rep KPIs, source KPIs)
+✅ **All processing stays in the browser tab.**  
+✅ Decrypts AES-GCM `.bin` files locally using Web Crypto.  
+✅ Exports **XLSX** + **Unsold CSV**.
 
 ---
 
-## Live Data Source
+## What it does
 
-Default CSV URL used by the app:
+1. **Load data**
+   - **Encrypted Mode:** Fetches `lead.bin` + `sold_log.bin` by URL and decrypts with `.key` files.
+   - **CSV Mode:** Upload raw leads + sold CSVs.
 
-- `https://raw.githubusercontent.com/BabakRosewater/otdb/main/otdb.csv`
+2. **Normalize and standardize columns**
+   - Auto-detects common column names (lead date, sold date, source, VIN, email, phone, gross, etc.)
 
-You can change it in the UI at runtime via the **Data URL (CSV)** input.
+3. **Attribution matching (Sold → Lead)**
+   - Matches in this order:
+     1) AutoLeadID (if present)  
+     2) VIN  
+     3) Email  
+     4) Phone  
+     5) Name (weakest)
+   - Picks best lead by date proximity to SoldDate and flags ambiguous matches.
 
-### Where to change it in code
-Look for:
+4. **Cohort / “Sold Through” logic**
+   - Lead cohort is defined by **Lead Start / Lead End** (Lead Recd Date).
+   - “Unsold” is evaluated through **Count Sold Through** to prevent false unsold when sales happen after the cohort window.
 
-```js
-const DEFAULT_URL = "https://raw.githubusercontent.com/BabakRosewater/otdb/main/otdb.csv";
-````
+5. **Unsold Prospects (Re-Engage)**
+   - Priority Score = Recency + Contact + Underserved RT + Source
+   - Provides a “Next Best Action” suggestion per lead.
 
----
-
-## MTD Default Logic (Important)
-
-On first load, the dashboard sets the date filter to **MTD of the current month in the dataset**:
-
-1. Finds the **latest `Created` date** present in the CSV (`maxD`)
-2. Sets:
-
-   * `StartDate = first day of maxD’s month`
-   * `EndDate   = maxD’s day`
-
-This is safer than using “today” because your export may not include today’s rows yet.
-
----
-
-## KPI Definitions (Glossary)
-
-### Counts
-
-* **Total Leads** = all rows in the filtered set
-* **Bad** = rows where status type is Bad
-* **OTDB Leads** = `Total − Bad`
-* **Sold / Lost / Active** = based on status type
-
-### Close Rates
-
-* **OTDB Close %** = `Sold ÷ OTDB`
-* **Close (Closed)** = `Sold ÷ (Sold + Lost)`
-
-### Hygiene (tracked separately)
-
-* **Bad %** = `Bad ÷ Total`
-* **Duplicate % (Total)** = `Dup ÷ Total`
-* **Dup% of Bad** = `Dup ÷ Bad`
-
-> Duplicate rows are detected as: `Bad` + the status name contains `duplicate` (case-insensitive).
-
-### Execution (Speed-to-lead)
-
-All execution metrics use **OTDB** rows (non-bad):
-
-* **Attempt Coverage %** = `OTDB with a first attempt timestamp ÷ OTDB`
-* **Median Speed-to-Lead (min)** = median minutes between Created → First Attempt
-* **SLA ≤15m %** = `count(minsToFirst ≤ 15) ÷ OTDB`
-* **SLA ≤60m %** = `count(minsToFirst ≤ 60) ÷ OTDB`
-
-### Aging
-
-On **OTDB Active** rows:
-
-* **Active >7d** = count of active OTDB rows older than 7 days
-* Also bucket counts: `0–2`, `3–7`, `8–14`, `15+`
-
-### Trade Capture
-
-* **Trade Capture %** = `OTDB rows with TradeMake or TradeModel ÷ OTDB`
-
-### Gross (optional)
-
-If your CSV contains front/back gross:
-
-* **Avg Front / Back / Total** across Sold rows
+6. **Exports**
+   - XLSX: Leads (View), Sold (View), Unsold Prospects
+   - Unsold CSV: re-engagement list ready for upload/work queues
 
 ---
 
-## Required / Supported Columns
+## Tech stack
 
-This project **auto-detects** columns with a mapping function, so the exact header names can vary.
-
-### Key fields (best case)
-
-* Created timestamp:
-
-  * `Created`, `LeadCreatedUTC`, `LeadCreated`, `CreatedUTC`
-* First attempt timestamp:
-
-  * `FirstAttemptedContactUTC`, `FirstAttemptedContact`
-* Rep name (preferred):
-
-  * `UserFirstName`, `UserLastName`
-* Lead source/type:
-
-  * `LeadSourceName`, `LeadTypeName`
-* Status:
-
-  * `LeadStatusTypeName` (Bad, Sold, Lost, Active)
-  * `LeadStatusName` (reason, includes “Duplicate” often)
-
-### Optional fields
-
-* `FrontGross`, `BackGross`, `SellingPrice`, `DealNumber`
-* `TradeMake`, `TradeModel`
+- **TailwindCSS** (UI)
+- **Vanilla JS** (logic)
+- **PapaParse** (CSV parsing)
+- **Day.js** (date parsing)
+- **Chart.js** (visualizations)
+- **SheetJS (xlsx)** (exports)
+- **Web Crypto API** (AES-GCM decrypt)
 
 ---
 
-## Why “Unassigned” reps happen
+## Repository layout (recommended)
 
-Salesperson is built from:
+This app can be a single HTML file. For GitHub + Cloudflare Pages, the cleanest approach is:
 
-1. `UserFirstName + UserLastName`
-2. fallback to other rep columns (AssignedTo/Owner/etc.)
-3. if missing → `"(Unassigned)"`
+/
+├─ index.html
+└─ README.md
 
-If you see lots of Unassigned:
 
-* those rows likely have blank rep name fields in the export
-* the dashboard includes an **Unassigned diagnostics** panel to quantify missing first/last/both
+> If you prefer, you can later split into `styles.css` + `app.js`, but it’s not required.
 
 ---
 
-## Features
+## Data requirements
 
-### Filters
+### Leads CSV (common fields)
 
-* Date range (Start / End)
-* Salesperson multi-select
-* Source multi-select
-* Min volume threshold (for “low n” confidence)
-* Now override (for aging calculations)
+The app will try to auto-detect these columns (your headers may vary):
 
-### Charts
+- Lead date: `Recd Date`, `Received Date`, `Created Date`, `Lead Date`, etc.
+- Source: `Lead Source`, `Source`
+- Contact: `Email`, `Phone`
+- Optional: `Lead Price`, `VIN`, `Business Response Time (min)`, `Sales Rep`
+- Optional vehicle detail: `Vehicle Type`, `Media Type`, `Car Make`, `Car Model`, `Trim`
 
-* OTDB Close % by Salesperson
-* OTDB Leads + Sold by Salesperson
-* OTDB Close % by Source (top 30)
-* Duplicate Count by Source (top 30)
+If Lead Date or Source can’t be found, you’ll see a data-quality alert.
 
-### Tables
+### Sold Log CSV (common fields)
 
-* Salesperson KPI table (sortable)
-* Lead Source KPI table (sortable)
-* Lost Reasons (OTDB only)
-* Bad Reasons (hygiene only)
-* Raw filtered data (search + paging)
+Auto-detected fields include:
 
-### Exports
+- Sold date: `SoldDate`, `Sold Date`, `RDR Date`
+- VIN: `VIN`, `VehicleVIN`
+- Contact: `Email`, `Phone`
+- Gross: `FrontGross`, `BackGross`
+- Rep: `SalesRepName`
+- Optional: `AutoLeadID`, deal #, stock #
 
-* Export filtered rows as CSV
-* Export Rep KPI table as CSV
-* Export Source KPI table as CSV
+If Sold Date can’t be found, you’ll see an alert.
 
 ---
 
-## Local Use
+## Encrypted BIN mode
 
-This is a **static HTML** file. You can run it:
+### BIN format
 
-* from a local file (may be subject to browser CORS rules)
-* or via a simple local server:
+Each `.bin` must be:
 
-### Option A — Python
+- First **12 bytes**: AES-GCM IV
+- Remaining bytes: AES-GCM ciphertext
 
+### Key file format
+
+Each `.key` must be:
+
+- Exactly **32 bytes** (raw AES-256 key)
+
+### Typical inputs
+
+- Leads BIN URL: `https://raw.githubusercontent.com/<owner>/<repo>/main/lead.bin`
+- Sold BIN URL:  `https://raw.githubusercontent.com/<owner>/<repo>/main/sold_log.bin`
+
+> The app fetches BINs over HTTPS and decrypts them locally. Nothing is uploaded.
+
+---
+
+## How to run locally
+
+### Option 1 — simplest (recommended)
+Use a local static server (avoid `file://` due to fetch/CORS limitations):
+
+#### Using Python
 ```bash
 python -m http.server 8080
-```
+Then open:
 
-Open:
+http://localhost:8080
 
-* `http://localhost:8080`
+Using Node (http-server)
+npx http-server -p 8080
+Usage
+Encrypted Mode (BINs)
+Paste BIN URLs:
 
-### Option B — Node
+Leads Data URL
 
-```bash
-npx serve
-```
+Sold Log Data URL
 
----
+Select .key files:
 
-## Deployment Options
+Lead Key
 
-* GitHub Pages (recommended)
-* Netlify
-* Render (Static site)
+Sold Key
 
-If using GitHub Pages:
+Click Decrypt & Load
 
-1. Put the HTML file in repo root (or `/docs`)
-2. Enable Pages in repo settings
-3. Confirm the `DEFAULT_URL` points to your raw `otdb.csv`
+Click Run Analysis (auto-runs after decrypt in current build)
 
----
+CSV Mode
+Click Or upload raw CSVs
 
-## Updating the dataset
+Upload Leads CSV
 
-Replace/commit the CSV here:
+Upload Sold Log CSV
 
-* `otdb.csv` in this repo:
+Click Run Analysis
 
-  * `BabakRosewater/otdb`
+Filters
+Lead Start / Lead End: defines the lead cohort
 
-Then reload the dashboard.
+Count Sold Through: counts sales up to this date (important for unsold accuracy)
 
-> Pro tip: keep the filename the same (`otdb.csv`) so the dashboard never needs code updates.
+Unsold filters:
 
----
+text search (name/source/model/phone/etc.)
 
-## Customization Guide
+new/used
 
-### Change the default dataset URL
+age buckets
 
-Edit:
+sort by priority or lead date
 
-```js
-const DEFAULT_URL = "https://raw.githubusercontent.com/BabakRosewater/otdb/main/otdb.csv";
-```
+Export
+XLSX: full workbook
 
-### Add a KPI
+Unsold CSV: re-engagement list
 
-1. Add calculation in `computeKpis(rows)`
-2. Add columns in KPI table headers in `renderKpiTable(...)`
-3. Add to exports in `exportKpiTable(...)`
-4. (Optional) add a tile in `renderTiles(...)`
+KPI definitions (high level)
+Leads (Filtered): leads within selected cohort date range
 
-### Add new column mapping
+Sold Records (All): all sold records loaded (or filtered view if you extend it)
 
-Add to `inferColumnMap(cols)` using either:
+Attribution Match: matched sold records / sold view
 
-* exact aliases list
-* regex include patterns
+Speed to Lead SLA: score derived from response-time buckets
 
----
+Unsold Prospects: cohort leads not sold through cutoff date
 
-## Known Notes / Design Decisions
+Dedup Close Rate: unique customers sold / unique customers leads
 
-* **Bad leads do not count against OTDB closing performance**
-* **Duplicates are treated as hygiene**
-* MTD is based on the dataset’s newest date (not system date)
-* SLA calculations use OTDB denominator so missing attempts count as misses
-* Charts are destroyed before redraw to prevent stacking
+Days to Sale (Med / P90): median and 90th percentile lead→sale time
 
----
+Troubleshooting
+“Key must be 32 bytes”
+Your .key file is not exactly 32 bytes. It must be a raw 32-byte key.
 
-## Roadmap Ideas
+“BIN too small to contain IV + ciphertext”
+Your .bin does not include the 12-byte IV or is not the expected encryption format.
 
-* Appointment funnel metrics (Set / Shown / Sold) if OTDB export includes those fields
-* Channel segmentation (Internet vs Phone vs Walk-in)
-* Lead status analysis (pipeline health) if a true “Lead Status” field exists
-* Rep leaderboard view + trend over time (requires historical CSVs)
+Many unmatched sold records
+Make sure Sold Log contains at least one strong identifier (VIN, email, phone) and that Leads contain the same.
 
----
+False “unsold”
+Use Count Sold Through so the app counts sales after the cohort lead window.
 
-## Support / Troubleshooting
+Security & privacy
+All parsing and matching occurs locally in the browser.
 
-### Data won’t load
+Decryption occurs locally via Web Crypto.
 
-* Ensure the URL is **raw** GitHub:
+Network calls are limited to:
 
-  * `raw.githubusercontent.com/...`
-* Confirm the CSV has headers and content
-* Open devtools console to see fetch or parsing errors
+fetching .bin files by URL (if used)
 
-### Dates missing / wrong
+loading CDN libraries (Tailwind, PapaParse, Day.js, Chart.js, xlsx)
 
-* Confirm the export has a usable “Created” column format
-* If needed, extend `parseDateAny()` to support your exact timestamp format
+Setup + Deployment (Cloudflare Pages)
+Option A — Deploy from GitHub (recommended)
+1) Create a GitHub repo
+Add:
 
-### Too many Unassigned reps
+index.html
 
-* Confirm the export includes `UserFirstName` and `UserLastName`
-* Use the Unassigned diagnostics panel to confirm what’s missing
+README.md (this file)
 
----
+2) Connect Cloudflare Pages
+In Cloudflare Dashboard → Workers & Pages → Pages
 
-```
+Click Create a project
 
-If you want, I can also include a **“Screenshots”** section scaffold and a **sample CSV header snippet** that matches your current `otdb.csv` so your team knows what “good” looks like.
-::contentReference[oaicite:0]{index=0}
-```
+Select Connect to Git
+
+Choose your GitHub repo
+
+Configure build settings:
+
+Framework preset: None
+
+Build command: (leave blank)
+
+Build output directory: / (root)
+
+Deploy
+
+Cloudflare will host your static site at:
+
+https://<project-name>.pages.dev
+
+Notes
+Because this is static HTML, there is no build step.
+
+Updates happen automatically on new commits (if you keep auto-deploy enabled).
+
+Option B — Deploy by direct upload (no Git integration)
+In Cloudflare Pages → Create a project
+
+Choose Upload assets
+
+Upload:
+
+index.html
+
+(optional) any additional assets
+
+Deploy
+
+Using encrypted BIN URLs on Cloudflare Pages
+If your BINs are hosted on GitHub:
+
+Use raw URLs to fetch:
+
+https://raw.githubusercontent.com/<owner>/<repo>/refs/heads/main/lead.bin
+
+https://raw.githubusercontent.com/<owner>/<repo>/refs/heads/main/sold_log.bin
+
+If you see fetch/CORS issues:
+
+Ensure the URL is reachable publicly
+
+Use the raw.githubusercontent.com domain
+
+Avoid redirect URLs or “blob” URLs
+
+(Optional) Recommended repo enhancements
+Add a CNAME file if using a custom domain
+
+Add LICENSE (internal use or proprietary)
+
+Split to /assets later if you add images/logos
+
+License / Intended use
+Internal dealership operational analytics tool:
+
+attribution insights
+
+speed-to-lead accountability
+
+re-engagement execution
+
+lead source ROI overview
+
+Support / Next enhancements (ideas)
+Add UI controls for:
+
+attribution window
+
+ambiguity threshold
+
+Add a “debug attribution” panel:
+
+top unmatched reasons
+
+rejected by window
+
+multi-match collisions
+
+Add source normalization mapping (canonical source groups)
+
